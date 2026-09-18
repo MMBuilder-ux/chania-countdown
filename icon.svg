@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Chania lighthouse at sunset, with EZY8225 crossing the sun. -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"   stop-color="#1B5FD1"/>
+      <stop offset=".45" stop-color="#6FA6EE"/>
+      <stop offset=".70" stop-color="#FFD68A"/>
+    </linearGradient>
+    <radialGradient id="sun" cx=".42" cy=".38" r=".7">
+      <stop offset="0"  stop-color="#FFF1BF"/>
+      <stop offset=".45" stop-color="#FFC23D"/>
+      <stop offset="1"  stop-color="#F59A00"/>
+    </radialGradient>
+    <radialGradient id="glow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#FFE7A0" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#FFE7A0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12508F"/>
+      <stop offset="1" stop-color="#0B2545"/>
+    </linearGradient>
+    <clipPath id="above"><rect width="1024" height="712"/></clipPath>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#sky)"/>
+
+  <!-- the sun, half-set behind the horizon -->
+  <circle cx="648" cy="520" r="360" fill="url(#glow)" clip-path="url(#above)"/>
+  <circle cx="648" cy="520" r="228" fill="url(#sun)" clip-path="url(#above)"/>
+
+  <!-- the plane, crossing the sun -->
+  <path fill="#0B2545" transform="translate(690 430) rotate(-18) scale(1.05)"
+        d="M112 0c0-8-10-14-22-14H30L-12-86h-26l20 72h-46l-18-24h-20l12 38-12 38h20l18-24h46l-20 72h26L30 14h60c12 0 22-6 22-14z"/>
+
+  <!-- sea, with the sun's reflection -->
+  <rect y="706" width="1024" height="318" fill="url(#sea)"/>
+  <g fill="#FFC23D">
+    <rect x="490" y="748" width="316" height="20" rx="10"/>
+    <rect x="540" y="806" width="216" height="18" rx="9" opacity=".85"/>
+    <rect x="584" y="862" width="128" height="16" rx="8" opacity=".7"/>
+    <rect x="618" y="914" width="60"  height="14" rx="7" opacity=".55"/>
+  </g>
+
+  <!-- harbour wall -->
+  <path fill="#0B2545" d="M120 700h540l30 26H90z"/>
+
+  <!-- the Venetian lighthouse -->
+  <g fill="#0B2545">
+    <rect x="270" y="624" width="170" height="80" rx="6"/>
+    <path d="M300 628h110l-22-300h-66z"/>
+    <rect x="296" y="304" width="118" height="30" rx="6"/>
+    <rect x="315" y="226" width="80" height="12" rx="4"/>
+    <path d="M305 232h100l-50-58z"/>
+    <circle cx="355" cy="168" r="11"/>
+  </g>
+  <!-- the lamp, lit the same yellow as the sun -->
+  <circle cx="355" cy="272" r="80" fill="url(#glow)"/>
+  <rect x="323" y="236" width="64" height="70" rx="6" fill="#FFD25A"/>
+  <path d="M355 238v66" stroke="#0B2545" stroke-width="8"/>
+  <rect x="296" y="304" width="118" height="30" rx="6" fill="#0B2545"/>
+</svg>
