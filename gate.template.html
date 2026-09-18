@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Chania Countdown</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B2545">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Figtree:wght@400;600;700&display=swap">
+<style>
+  :root{color-scheme:light}
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; min-height:100dvh; display:grid; place-items:end center;
+    font-family:"Figtree","Avenir Next","Helvetica Neue",Arial,sans-serif; color:#0B2545;
+    background:#0B2545 url("https://images.unsplash.com/photo-1681280931205-a3c6ed0452d5?w=1600&q=72&auto=format&fit=crop") center/cover no-repeat;
+    padding:20px 16px calc(28px + env(safe-area-inset-bottom));
+    isolation:isolate; position:relative;
+  }
+  body::before{content:""; position:fixed; inset:0; z-index:-1;
+    background:linear-gradient(180deg, rgba(11,37,69,.25), rgba(11,37,69,.1) 35%, rgba(11,37,69,.7))}
+  body::after{content:""; position:fixed; z-index:-1; top:-160px; right:-140px; width:440px; height:440px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,222,120,.85), rgba(255,194,61,.3) 34%, rgba(255,194,61,0) 68%); mix-blend-mode:screen}
+  main{width:min(420px,100%); background:#FFFFFF; border-radius:24px; padding:26px 22px 22px;
+    box-shadow:0 30px 60px -20px rgba(11,37,69,.55)}
+  h1{font-family:"Bricolage Grotesque","Avenir Next",Arial,sans-serif; font-weight:800; font-size:32px; letter-spacing:-.03em; line-height:1; margin:0}
+  h1 span{display:inline-block; background:#FFC23D; padding:0 8px 2px; border-radius:10px; margin-left:2px}
+  p{margin:10px 0 18px; color:#46607E; font-size:15px; line-height:1.5}
+  label.f{display:block; font-size:11.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#8196AE; margin-bottom:6px}
+  input[type=password]{width:100%; font:inherit; font-size:17px; padding:13px 14px; border-radius:14px; border:2px solid #DAE6F0; background:#F3F8FC; color:#0B2545}
+  input[type=password]:focus{outline:none; border-color:#FFC23D; background:#fff}
+  .rem{display:flex; gap:10px; align-items:center; margin:14px 0 18px; font-size:14.5px; color:#46607E; cursor:pointer}
+  .rem input{width:20px; height:20px; accent-color:#1B5FD1}
+  button{width:100%; border:0; cursor:pointer; font:inherit; font-weight:700; font-size:16px; padding:14px; border-radius:999px;
+    background:#FFC23D; color:#0B2545; box-shadow:0 3px 0 #F5A300}
+  button:disabled{opacity:.6; cursor:default}
+  button:focus-visible{outline:3px solid #1B5FD1; outline-offset:2px}
+  .err{min-height:20px; margin-top:12px; font-size:14px; color:#D63A2A; text-align:center}
+  small.credit{position:fixed; top:10px; right:12px; font-size:10.5px; color:rgba(255,255,255,.8)}
+  small.credit a{color:inherit}
+  noscript{display:block; margin-top:12px; color:#D63A2A}
+</style>
+</head>
+<body>
+<small class="credit">Photo: <a href="https://unsplash.com/@marttisalmi?utm_source=chania_countdown&amp;utm_medium=referral" rel="noopener">Martti Salmi</a> / Unsplash</small>
+<main>
+  <h1>Chania <span>2026</span></h1>
+  <p>This page is private. Type the password to open it.</p>
+  <form id="f" autocomplete="off">
+    <label class="f" for="pw">Password</label>
+    <input type="password" id="pw" autocomplete="current-password" autofocus required>
+    <label class="rem"><input type="checkbox" id="rem" checked> Remember on this phone</label>
+    <button id="go" type="submit">Open</button>
+    <div class="err" id="err" role="alert"></div>
+  </form>
+  <noscript>This page needs JavaScript switched on.</noscript>
+</main>
+<script>
+"use strict";
+const PAYLOAD = "__PAYLOAD__";
+const KEYSTORE = "chania2026.key";
+const ub64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const b64  = b => { let s=""; new Uint8Array(b).forEach(x => s += String.fromCharCode(x)); return btoa(s); };
+const err  = t => { document.getElementById("err").textContent = t; };
+
+async function open(bits){
+  const key = await crypto.subtle.importKey("raw", bits, "AES-GCM", false, ["decrypt"]);
+  const pt  = await crypto.subtle.decrypt({name:"AES-GCM", iv:ub64(PAYLOAD.i)}, key, ub64(PAYLOAD.c));
+  const html = new TextDecoder().decode(pt);
+  // document.open() only replaces the page once this document has finished
+  // loading; earlier, the app would be appended to the gate instead.
+  if (document.readyState !== "complete") {
+    await new Promise(r => window.addEventListener("load", r, { once: true }));
+  }
+  document.open(); document.write(html); document.close();
+}
+async function bitsFrom(pass){
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveBits"]);
+  return crypto.subtle.deriveBits({name:"PBKDF2", salt:ub64(PAYLOAD.s), iterations:PAYLOAD.n, hash:"SHA-256"}, base, 256);
+}
+
+(async () => {
+  if (!window.crypto || !crypto.subtle) {
+    err("This browser cannot open locked pages here. Open the https address instead.");
+    document.getElementById("go").disabled = true;
+    return;
+  }
+  /* a remembered key only works for this exact build */
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEYSTORE) || "null");
+    if (saved && saved.s === PAYLOAD.s) {
+      document.querySelector("main").style.visibility = "hidden";   // no flash of the form
+      await open(ub64(saved.k)); return;
+    }
+    if (saved) localStorage.removeItem(KEYSTORE);
+  } catch (e) { try { localStorage.removeItem(KEYSTORE); } catch (_) {} }
+  document.querySelector("main").style.visibility = "";
+
+  document.getElementById("f").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const btn = document.getElementById("go");
+    btn.disabled = true; btn.textContent = "Opening…"; err("");
+    try {
+      const bits = await bitsFrom(document.getElementById("pw").value.trim());
+      if (document.getElementById("rem").checked) {
+        try { localStorage.setItem(KEYSTORE, JSON.stringify({s:PAYLOAD.s, k:b64(bits)})); } catch (e) {}
+      }
+      await open(bits);
+    } catch (e) {
+      try { localStorage.removeItem(KEYSTORE); } catch (_) {}
+      btn.disabled = false; btn.textContent = "Open";
+      err("That password does not open this page. Check it and try again.");
+      document.getElementById("pw").select();
+    }
+  });
+})();
+</script>
+</body>
+</html>

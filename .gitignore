@@ -1,0 +1,4 @@
+# Plaintext app and the password never leave this Mac.
+src/
+.trip-password
+.DS_Store
